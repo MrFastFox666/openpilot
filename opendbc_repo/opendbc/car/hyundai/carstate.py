@@ -71,6 +71,15 @@ class CarState(CarStateBase, EsccCarStateBase, MadsCarState, CarStateExt):
 
     self.params = CarControllerParams(CP)
 
+    # Display-only brake-lamp candidate, received on physical CAN bus 0.
+    self.brake_lamp_cp = None
+    if CP.carFingerprint == CAR.GENESIS_G80_ELECTRIFIED:
+      self.brake_lamp_cp = CANParser(
+        DBC[CP.carFingerprint][Bus.pt],
+        [("G80_BRAKE_LAMP_CANDIDATES", 0)],
+        0,
+      )
+
   def recent_button_interaction(self) -> bool:
     # On some newer model years, the CANCEL button acts as a pause/resume button based on the PCM state
     # To avoid re-engaging when openpilot cancels, check user engagement intention via buttons
@@ -236,9 +245,9 @@ class CarState(CarStateBase, EsccCarStateBase, MadsCarState, CarStateExt):
     ret.brakePressed = cp.vl["TCS"]["DriverBraking"] == 1
         
     # Experimental brake-lamp indicator; independent of driver brake-pedal input.
-    if self.CP.carFingerprint == CAR.GENESIS_G80_ELECTRIFIED:
+    if self.brake_lamp_cp is not None:
       ret.brakeLightsDEPRECATED = bool(
-        cp.vl["G80_BRAKE_LAMP_CANDIDATES"]["BrakeLamp_Candidate"]
+        self.brake_lamp_cp.vl["G80_BRAKE_LAMP_CANDIDATES"]["BrakeLamp_Candidate"]
       )
 
     ret.doorOpen = cp.vl["DOORS_SEATBELTS"]["DRIVER_DOOR"] == 1
