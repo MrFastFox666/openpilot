@@ -247,7 +247,7 @@ class CarState(CarStateBase, EsccCarStateBase, MadsCarState, CarStateExt):
     # Experimental brake-lamp indicator; independent of driver brake-pedal input.
     if self.brake_lamp_cp is not None:
       ret.brakeLightsDEPRECATED = bool(
-        self.brake_lamp_cp.vl["G80_BRAKE_LAMP_COPY_CANDIDATES"]["BrakeLamp_Candidate"]
+        self.brake_lamp_cp.vl["G80_BRAKE_LAMP_COPY_CANDIDATES"]["BrakeLampCopy_Candidate"]
       )
 
     ret.doorOpen = cp.vl["DOORS_SEATBELTS"]["DRIVER_DOOR"] == 1
