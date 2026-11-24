@@ -181,12 +181,23 @@ class HudRenderer(Widget):
     self._draw_brake_lamp(rect)
 
   def _draw_brake_lamp(self, rect: rl.Rectangle) -> None:
-    # Temporary test marker; does not read CAN or carState.
-    x = int(rect.x + rect.width / 2)
-    y = int(rect.y + rect.height / 2)
+    sm = ui_state.sm
 
-    rl.draw_circle(x, y, 18.0, rl.BLACK)
-    rl.draw_circle(x, y, 14.0, rl.Color(255, 0, 255, 255))
+    if sm.recv_frame["carState"] < ui_state.started_frame:
+      return
+    if not sm.alive["carState"] or not sm.valid["carState"]:
+      return
+
+    lamp_on = sm["carState"].brakeLightsDEPRECATED
+
+    x = int(rect.x + rect.width - 30)
+    y = int(rect.y + 30)
+    radius = 9.0
+
+    color = rl.Color(255, 0, 0, 255) if lamp_on else rl.Color(90, 90, 90, 200)
+
+    rl.draw_circle(x, y, radius + 2.0, rl.Color(0, 0, 0, 200))
+    rl.draw_circle(x, y, radius, color)
 
   def _draw_steering_wheel(self, rect: rl.Rectangle) -> None:
     wheel_txt = self._txt_wheel_critical if self._show_wheel_critical else self._txt_wheel
