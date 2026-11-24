@@ -234,6 +234,12 @@ class CarState(CarStateBase, EsccCarStateBase, MadsCarState, CarStateExt):
       ret.gasPressed = bool(cp.vl[self.accelerator_msg_canfd]["ACCELERATOR_PEDAL_PRESSED"])
 
     ret.brakePressed = cp.vl["TCS"]["DriverBraking"] == 1
+        
+    # Experimental brake-lamp indicator; independent of driver brake-pedal input.
+    if self.CP.carFingerprint == CAR.GENESIS_G80_ELECTRIFIED:
+      ret.brakeLightsDEPRECATED = bool(
+        cp.vl["G80_BRAKE_LAMP_CANDIDATES"]["BrakeLamp_Candidate"]
+      )
 
     ret.doorOpen = cp.vl["DOORS_SEATBELTS"]["DRIVER_DOOR"] == 1
     ret.seatbeltUnlatched = cp.vl["DOORS_SEATBELTS"]["DRIVER_SEATBELT"] == 0
