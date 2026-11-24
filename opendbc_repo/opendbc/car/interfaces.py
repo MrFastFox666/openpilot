@@ -273,6 +273,11 @@ class CarInterfaceBase(ABC, CarInterfaceBaseSP):
       if cp is not None:
         cp.update(can_packets)
 
+    # Update the optional display-only brake-lamp parser separately.
+    brake_lamp_cp = getattr(self.CS, "brake_lamp_cp", None)
+    if brake_lamp_cp is not None:
+      brake_lamp_cp.update(can_packets)
+    
     # get CarState
     ret, ret_sp = self.CS.update(self.can_parsers)
 
